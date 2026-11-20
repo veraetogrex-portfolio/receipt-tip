@@ -1,0 +1,104 @@
+/* Receipt Tip — github.com/veraetogrex-portfolio · zero dependencies
+   A restaurant bill you pull longer to tip. The tab on the total drags down along the stops No tip / 10 / 15 / 20%;
+   a tip tape comes out of the bill between subtotal and total, one tick per percent, and the total rides down with it. */
+:root {
+  --room: #07080c;             /* page */
+  --table: #0e1016;            /* app panel */
+  --bill: #181b22;             /* the bill */
+  --tape: #3b2416;             /* the tip tape inside the bill: warm copper-brown */
+  --line: rgba(255, 255, 255, .08);
+  --text: #f2f3f7; --text-2: #b4b8c2; --text-3: #8f95a1;
+  --ember: #ff9b45;            /* the tip and only the tip: tab, chosen stop, tape print */
+  --ember-ink: #2a1305;        /* chevrons on the tab */
+  --tape-2: #d9b89c;           /* secondary print on the tape */
+  --clay: #2a211b; --clay-ink: #e7c7a3;           /* plates under the dishes */
+  --linen: #f1ece4; --linen-ink: #15171c;         /* pay button: light, so ember keeps one meaning */
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; overflow: hidden; background: var(--room); color: var(--text); font: 16px/1.4 var(--font); }
+p, h1, ul { margin: 0; padding: 0; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--ember); outline-offset: 3px; }
+
+.rb { position: relative; width: 1360px; height: 800px; border-radius: 36px; overflow: hidden; user-select: none; font-family: var(--font);
+  background: var(--table); box-shadow: 0 0 0 1px var(--line) inset, 0 1px 0 rgba(255, 255, 255, .06) inset, 0 80px 140px -50px rgba(0, 0, 0, .8); }
+@media (max-width: 1400px) { .rb { zoom: .8; } }
+@media (max-width: 1100px) { .rb { zoom: .6; } }
+@media (max-width: 820px)  { .rb { zoom: .4; } }
+@media (max-width: 560px)  { .rb { zoom: .27; } }
+
+/* ── the order, left ── */
+.rb-order { position: absolute; left: 72px; top: 52px; width: 420px; }
+.rb-brand { display: flex; align-items: baseline; gap: 14px; }
+.rb-brand b { font: 800 24px var(--font); letter-spacing: .04em; }
+.rb-brand span { font: 600 22px var(--font); color: var(--text-3); }
+.rb-place { margin-top: 72px; font: 700 52px/1.05 var(--font); letter-spacing: -.025em; }
+.rb-table { margin-top: 12px; font: 500 26px var(--font); color: var(--text-2); }
+.rb-dishes { margin-top: 84px; list-style: none; }
+.rb-dish { display: grid; grid-template-columns: 84px 1fr auto; align-items: center; gap: 18px; padding: 36px 0; border-top: 1px solid var(--line); }
+.rb-plate { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: var(--clay); box-shadow: 0 0 0 1px rgba(255, 255, 255, .06) inset; color: var(--clay-ink); }
+.rb-plate svg { width: 54px; height: 54px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.rb-dish-t { min-width: 0; }
+.rb-dish-t b { display: block; font: 600 28px/1.15 var(--font); letter-spacing: -.01em; white-space: nowrap; }
+.rb-dish-t small { display: block; margin-top: 6px; font: 500 22px var(--font); color: var(--text-3); white-space: nowrap; }
+.rb-price { font: 600 34px var(--font); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+
+/* ── the bill: top (subtotal), the slot with the tape, the foot (total) that the tab pulls down ── */
+.rb-bill { position: absolute; left: 532px; top: 40px; width: 600px; height: 720px; }
+.rb-top { position: absolute; z-index: 2; left: 0; top: 0; width: 600px; height: 120px; border-radius: 28px 28px 0 0; background: var(--bill);
+  box-shadow: 1px 1px 0 0 var(--line) inset, -1px 0 0 0 var(--line) inset, 0 10px 14px -10px rgba(0, 0, 0, .7); }   /* lip over the tape */
+.rb-sub { position: absolute; left: 36px; right: 36px; top: 34px; display: flex; align-items: baseline; justify-content: space-between; }
+.rb-sub span { font: 500 30px var(--font); color: var(--text-2); }
+.rb-sub-v { font: 600 40px var(--font); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+
+.rb-slot { position: absolute; z-index: 1; left: 0; top: 120px; width: 600px; height: 320px; overflow: hidden; }
+.rb-tape { position: absolute; left: 0; top: 0; width: 600px; height: 320px; background: var(--tape); transform: translateY(-320px);
+  box-shadow: 1px 0 0 0 var(--line) inset, -1px 0 0 0 var(--line) inset; }   /* the bill's own side line runs over the tape */
+.rb-ticks { position: absolute; right: 0; top: 0; width: 44px; height: 320px; }
+.rb-ticks i { position: absolute; right: 0; width: 20px; height: 3px; margin-top: -1.5px; background: var(--ember); opacity: .75; }
+.rb-ticks i.is-five { width: 40px; height: 4px; margin-top: -2px; opacity: 1; }
+.rb-read { position: absolute; left: 0; right: 0; bottom: 0; height: 140px; display: flex; align-items: center; justify-content: space-between; padding: 0 76px 0 36px;
+  transition: opacity .15s; }
+.rb-read.is-off { opacity: 0; transition: none; }   /* off at once when the tape goes back in */
+.rb-read-t b { display: block; font: 700 34px/1.1 var(--font); letter-spacing: -.01em; color: var(--ember); }
+.rb-read-of { display: block; margin-top: 4px; font: 500 24px var(--font); color: var(--tape-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rb-read-v { display: flex; font: 700 60px/1 var(--font); letter-spacing: -.03em; color: var(--ember); font-variant-numeric: tabular-nums; }
+
+.rb-foot { position: absolute; z-index: 3; left: 0; top: 120px; width: 600px; height: 300px; border-radius: 0 0 28px 28px; background: var(--bill);
+  box-shadow: 1px -1px 0 0 var(--line) inset, -1px 0 0 0 var(--line) inset, 0 -10px 14px -10px rgba(0, 0, 0, .7); }
+.rb-foot::before { content: ""; position: absolute; left: 36px; right: 36px; top: 0; height: 1px; background: var(--line); }
+/* the tab: part of the foot, sticks out of the bill's edge and rides along the stops */
+.rb-tab { position: absolute; left: 600px; top: 0; width: 76px; height: 96px; border-radius: 0 24px 24px 0; background: var(--ember); color: var(--ember-ink);
+  display: grid; place-items: center; cursor: grab; touch-action: none; transform-origin: 0 50%; transition: transform .12s ease-out, filter .12s ease-out; }
+.rb-tab:active, .rb.is-drag .rb-tab { cursor: grabbing; transform: scale(.9, .94); filter: brightness(.82); }   /* held: squeezed and darker */
+.rb-tab svg { width: 44px; height: 44px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.rb-tab:focus-visible { outline-offset: 2px; }
+.rb-total-l { position: absolute; left: 36px; top: 112px; font: 600 32px var(--font); color: var(--text-2); }
+.rb-total { position: absolute; right: 36px; top: 30px; display: flex; font: 700 128px/1 var(--font); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.rb-pay { position: absolute; left: 36px; right: 36px; top: 188px; height: 76px; border-radius: 20px; background: var(--linen); color: var(--linen-ink);
+  font: 700 30px var(--font); text-align: center; transition: transform .15s ease-out; }
+.rb-pay:active { transform: scale(.97); }
+
+/* ── the stops, right of the bill ── */
+.rb-scale { position: absolute; left: 1224px; top: 0; width: 124px; height: 800px; }
+.rb-scale::before { content: ""; position: absolute; left: 0; top: var(--from, 192px); height: var(--len, 280px); width: 1px; background: rgba(255, 255, 255, .14); }
+.rb-scale-h { position: absolute; left: 16px; top: 128px; font: 600 26px var(--font); color: var(--text-2); }
+.rb-stop { position: absolute; left: 0; width: 124px; height: 62px; margin-top: -31px; padding-left: 16px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.rb-stop::before { content: ""; position: absolute; left: -6px; top: 30px; width: 13px; height: 2px; background: rgba(255, 255, 255, .3); }
+.rb-stop b { font: 700 34px/1 var(--font); letter-spacing: -.02em; color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rb-stop[data-rate="0"] b { font: 600 28px/1 var(--font); letter-spacing: 0; }
+.rb-stop small { margin-top: 3px; font: 500 22px/1 var(--font); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.rb-stop:hover b, .rb-stop.li-hover b { color: var(--text-2); }
+.rb-stop.is-on b { color: var(--ember); }
+.rb-stop[data-rate="0"].is-on b { color: var(--text); }
+.rb-stop.is-on small { color: var(--text-2); }
+.rb-stop.is-on::before { background: var(--ember); }
+
+/* numbers that roll: every digit is a column 0–9, only the digits that change move */
+.rb-dg { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+.rb-col { display: flex; flex-direction: column; transition: transform .5s cubic-bezier(.25, .9, .3, 1); }
+.rb-col > span { height: 1em; line-height: 1; text-align: center; }
+
+.rb.is-reset, .rb.is-reset * { transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .rb-col, .rb-read, .rb-tab { transition-duration: 1ms !important; } }
